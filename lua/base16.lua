@@ -1,6 +1,6 @@
-local nvim = require 'nvim'
+local g = vim.g
 
-local function highlight(group, guifg, guibg, ctermfg, ctermbg, attr, guisp)
+local function hi(group, guifg, guibg, ctermfg, ctermbg, attr, guisp)
 	local parts = {group}
 	if guifg then table.insert(parts, "guifg=#"..guifg) end
 	if guibg then table.insert(parts, "guibg=#"..guibg) end
@@ -12,25 +12,29 @@ local function highlight(group, guifg, guibg, ctermfg, ctermbg, attr, guisp)
 	end
 	if guisp then table.insert(parts, "guisp=#"..guisp) end
 
-	-- nvim.ex.highlight(parts)
-	vim.api.nvim_command('highlight '..table.concat(parts, ' '))
+	vim.cmd('highlight '..table.concat(parts, ' '))
 end
 
 -- Modified from https://github.com/chriskempson/base16-vim
 local function apply_base16_theme(theme, use_256_colorspace)
 	-- Terminal color definitions
-	local cterm00        = "00"
-	local cterm03        = "08"
-	local cterm05        = "07"
-	local cterm07        = "15"
-	local cterm08        = "01"
-	local cterm0A        = "03"
-	local cterm0B        = "02"
-	local cterm0C        = "06"
-	local cterm0D        = "04"
-	local cterm0E        = "05"
+	local cterm00 = "00"
+	local cterm03 = "08"
+	local cterm05 = "07"
+	local cterm07 = "15"
+	local cterm08 = "01"
+	local cterm0A = "03"
+	local cterm0B = "02"
+	local cterm0C = "06"
+	local cterm0D = "04"
+	local cterm0E = "05"
 
-	local cterm01, cterm02, cterm04, cterm06, cterm09, cterm0F
+	local cterm01
+	local cterm02
+	local cterm04
+	local cterm06
+	local cterm09
+	local cterm0F
 
 	if use_256_colorspace then
 		cterm01 = "18"
@@ -49,289 +53,261 @@ local function apply_base16_theme(theme, use_256_colorspace)
 	end
 
 	-- Neovim terminal colours
-	if nvim.fn.has("nvim") then
-		nvim.g.terminal_color_0 =  "#"..theme.base00
-		nvim.g.terminal_color_1 =  "#"..theme.base08
-		nvim.g.terminal_color_2 =  "#"..theme.base0B
-		nvim.g.terminal_color_3 =  "#"..theme.base0A
-		nvim.g.terminal_color_4 =  "#"..theme.base0D
-		nvim.g.terminal_color_5 =  "#"..theme.base0E
-		nvim.g.terminal_color_6 =  "#"..theme.base0C
-		nvim.g.terminal_color_7 =  "#"..theme.base05
-		nvim.g.terminal_color_8 =  "#"..theme.base03
-		nvim.g.terminal_color_9 =  "#"..theme.base08
-		nvim.g.terminal_color_10 = "#"..theme.base0B
-		nvim.g.terminal_color_11 = "#"..theme.base0A
-		nvim.g.terminal_color_12 = "#"..theme.base0D
-		nvim.g.terminal_color_13 = "#"..theme.base0E
-		nvim.g.terminal_color_14 = "#"..theme.base0C
-		nvim.g.terminal_color_15 = "#"..theme.base07
-		if nvim.o.background == "light" then
-			nvim.g.terminal_color_background = "#"..theme.base05
-			nvim.g.terminal_color_foreground = "#"..theme.base0B
-		else
-			nvim.g.terminal_color_background = "#"..theme.base00
-			nvim.g.terminal_color_foreground = "#"..theme.base0E
-		end
-	-- VIM, not NVIM settings
-	-- elseif nvim.fn.has("terminal") then
-	-- 	nvim.g.terminal_ansi_colors = {
-	-- 		theme.base00,
-	-- 		theme.base08,
-	-- 		theme.base0B,
-	-- 		theme.base0A,
-	-- 		theme.base0D,
-	-- 		theme.base0E,
-	-- 		theme.base0C,
-	-- 		theme.base05,
-	-- 		theme.base03,
-	-- 		theme.base08,
-	-- 		theme.base0B,
-	-- 		theme.base0A,
-	-- 		theme.base0D,
-	-- 		theme.base0E,
-	-- 		theme.base0C,
-	-- 		theme.base07,
-	-- 	}
+	g.terminal_color_0 =  "#"..theme.base00
+	g.terminal_color_1 =  "#"..theme.base08
+	g.terminal_color_2 =  "#"..theme.base0B
+	g.terminal_color_3 =  "#"..theme.base0A
+	g.terminal_color_4 =  "#"..theme.base0D
+	g.terminal_color_5 =  "#"..theme.base0E
+	g.terminal_color_6 =  "#"..theme.base0C
+	g.terminal_color_7 =  "#"..theme.base05
+	g.terminal_color_8 =  "#"..theme.base03
+	g.terminal_color_9 =  "#"..theme.base08
+	g.terminal_color_10 = "#"..theme.base0B
+	g.terminal_color_11 = "#"..theme.base0A
+	g.terminal_color_12 = "#"..theme.base0D
+	g.terminal_color_13 = "#"..theme.base0E
+	g.terminal_color_14 = "#"..theme.base0C
+	g.terminal_color_15 = "#"..theme.base07
+
+	if vim.o.background == "light" then
+		g.terminal_color_background = "#"..theme.base05
+		g.terminal_color_foreground = "#"..theme.base0B
+	else
+		g.terminal_color_background = "#"..theme.base00
+		g.terminal_color_foreground = "#"..theme.base0E
 	end
 
-	-- TODO
-	-- nvim.command "hi clear"
-	-- nvim.command "syntax reset"
-
 	-- Vim editor colors
-	highlight("Normal",        theme.base05, theme.base00, cterm05, cterm00, nil, nil)
-	highlight("Bold",          nil, nil, nil, nil, "bold", nil)
-	highlight("Debug",         theme.base08, nil, cterm08, nil, nil, nil)
-	highlight("Directory",     theme.base0D, nil, cterm0D, nil, nil, nil)
-	highlight("Error",         theme.base00, theme.base08, cterm00, cterm08, nil, nil)
-	highlight("ErrorMsg",      theme.base08, theme.base00, cterm08, cterm00, nil, nil)
-	highlight("Exception",     theme.base08, nil, cterm08, nil, nil, nil)
-	highlight("FoldColumn",    theme.base0C, theme.base01, cterm0C, cterm01, nil, nil)
-	highlight("Folded",        theme.base03, theme.base01, cterm03, cterm01, nil, nil)
-	highlight("IncSearch",     theme.base01, theme.base09, cterm01, cterm09, "none", nil)
-	highlight("Italic",        nil, nil, nil, nil, "none", nil)
-	highlight("Macro",         theme.base08, nil, cterm08, nil, nil, nil)
-	highlight("MatchParen",    nil, theme.base03, nil, cterm03,  nil, nil)
-	highlight("ModeMsg",       theme.base0B, nil, cterm0B, nil, nil, nil)
-	highlight("MoreMsg",       theme.base0B, nil, cterm0B, nil, nil, nil)
-	highlight("Question",      theme.base0D, nil, cterm0D, nil, nil, nil)
-	highlight("Search",        theme.base01, theme.base0A, cterm01, cterm0A,  nil, nil)
-	highlight("Substitute",    theme.base01, theme.base0A, cterm01, cterm0A, "none", nil)
-	highlight("SpecialKey",    theme.base03, nil, cterm03, nil, nil, nil)
-	highlight("TooLong",       theme.base08, nil, cterm08, nil, nil, nil)
-	highlight("Underlined",    theme.base08, nil, cterm08, nil, nil, nil)
-	highlight("Visual",        nil, theme.base02, nil, cterm02, nil, nil)
-	highlight("VisualNOS",     theme.base08, nil, cterm08, nil, nil, nil)
-	highlight("WarningMsg",    theme.base08, nil, cterm08, nil, nil, nil)
-	highlight("WildMenu",      theme.base08, theme.base0A, cterm08, nil, nil, nil)
-	highlight("Title",         theme.base0D, nil, cterm0D, nil, "none", nil)
-	highlight("Conceal",       theme.base0D, theme.base00, cterm0D, cterm00, nil, nil)
-	highlight("Cursor",        theme.base00, theme.base05, cterm00, cterm05, nil, nil)
-	highlight("NonText",       theme.base03, nil, cterm03, nil, nil, nil)
-	highlight("LineNr",        theme.base03, theme.base01, cterm03, cterm01, nil, nil)
-	highlight("SignColumn",    theme.base03, theme.base01, cterm03, cterm01, nil, nil)
-	highlight("StatusLine",    theme.base04, theme.base02, cterm04, cterm02, "none", nil)
-	highlight("StatusLineNC",  theme.base03, theme.base01, cterm03, cterm01, "none", nil)
-	highlight("VertSplit",     theme.base02, theme.base02, cterm02, cterm02, "none", nil)
-	highlight("ColorColumn",   nil, theme.base01, nil, cterm01, "none", nil)
-	highlight("CursorColumn",  nil, theme.base01, nil, cterm01, "none", nil)
-	highlight("CursorLine",    nil, theme.base01, nil, cterm01, "none", nil)
-	highlight("CursorLineNr",  theme.base04, theme.base01, cterm04, cterm01, nil, nil)
-	highlight("QuickFixLine",  nil, theme.base01, nil, cterm01, "none", nil)
-	highlight("PMenu",         theme.base05, theme.base01, cterm05, cterm01, "none", nil)
-	highlight("PMenuSel",      theme.base01, theme.base05, cterm01, cterm05, nil, nil)
-	highlight("TabLine",       theme.base03, theme.base01, cterm03, cterm01, "none", nil)
-	highlight("TabLineFill",   theme.base03, theme.base01, cterm03, cterm01, "none", nil)
-	highlight("TabLineSel",    theme.base0B, theme.base01, cterm0B, cterm01, "none", nil)
+	hi("Normal",        theme.base05, theme.base00, cterm05, cterm00, nil, nil)
+	hi("Bold",          nil, nil, nil, nil, "bold", nil)
+	hi("Debug",         theme.base08, nil, cterm08, nil, nil, nil)
+	hi("Directory",     theme.base0D, nil, cterm0D, nil, nil, nil)
+	hi("Error",         theme.base00, theme.base08, cterm00, cterm08, nil, nil)
+	hi("ErrorMsg",      theme.base08, theme.base00, cterm08, cterm00, nil, nil)
+	hi("Exception",     theme.base08, nil, cterm08, nil, nil, nil)
+	hi("FoldColumn",    theme.base0C, theme.base01, cterm0C, cterm01, nil, nil)
+	hi("Folded",        theme.base03, theme.base01, cterm03, cterm01, nil, nil)
+	hi("IncSearch",     theme.base01, theme.base09, cterm01, cterm09, "none", nil)
+	hi("Italic",        nil, nil, nil, nil, "none", nil)
+	hi("Macro",         theme.base08, nil, cterm08, nil, nil, nil)
+	hi("MatchParen",    nil, theme.base03, nil, cterm03,  nil, nil)
+	hi("ModeMsg",       theme.base0B, nil, cterm0B, nil, nil, nil)
+	hi("MoreMsg",       theme.base0B, nil, cterm0B, nil, nil, nil)
+	hi("Question",      theme.base0D, nil, cterm0D, nil, nil, nil)
+	hi("Search",        theme.base01, theme.base0A, cterm01, cterm0A,  nil, nil)
+	hi("Substitute",    theme.base01, theme.base0A, cterm01, cterm0A, "none", nil)
+	hi("SpecialKey",    theme.base03, nil, cterm03, nil, nil, nil)
+	hi("TooLong",       theme.base08, nil, cterm08, nil, nil, nil)
+	hi("Underlined",    theme.base08, nil, cterm08, nil, nil, nil)
+	hi("Visual",        nil, theme.base02, nil, cterm02, nil, nil)
+	hi("VisualNOS",     theme.base08, nil, cterm08, nil, nil, nil)
+	hi("WarningMsg",    theme.base08, nil, cterm08, nil, nil, nil)
+	hi("WildMenu",      theme.base08, theme.base0A, cterm08, nil, nil, nil)
+	hi("Title",         theme.base0D, nil, cterm0D, nil, "none", nil)
+	hi("Conceal",       theme.base0D, theme.base00, cterm0D, cterm00, nil, nil)
+	hi("Cursor",        theme.base00, theme.base05, cterm00, cterm05, nil, nil)
+	hi("NonText",       theme.base03, nil, cterm03, nil, nil, nil)
+	hi("LineNr",        theme.base03, theme.base01, cterm03, cterm01, nil, nil)
+	hi("SignColumn",    theme.base03, theme.base01, cterm03, cterm01, nil, nil)
+	hi("StatusLine",    theme.base04, theme.base02, cterm04, cterm02, "none", nil)
+	hi("StatusLineNC",  theme.base03, theme.base01, cterm03, cterm01, "none", nil)
+	hi("VertSplit",     theme.base02, theme.base02, cterm02, cterm02, "none", nil)
+	hi("ColorColumn",   nil, theme.base01, nil, cterm01, "none", nil)
+	hi("CursorColumn",  nil, theme.base01, nil, cterm01, "none", nil)
+	hi("CursorLine",    nil, theme.base01, nil, cterm01, "none", nil)
+	hi("CursorLineNr",  theme.base04, theme.base01, cterm04, cterm01, nil, nil)
+	hi("QuickFixLine",  nil, theme.base01, nil, cterm01, "none", nil)
+	hi("PMenu",         theme.base05, theme.base01, cterm05, cterm01, "none", nil)
+	hi("PMenuSel",      theme.base01, theme.base05, cterm01, cterm05, nil, nil)
+	hi("TabLine",       theme.base03, theme.base01, cterm03, cterm01, "none", nil)
+	hi("TabLineFill",   theme.base03, theme.base01, cterm03, cterm01, "none", nil)
+	hi("TabLineSel",    theme.base0B, theme.base01, cterm0B, cterm01, "none", nil)
 
 	-- Standard syntax highlighting
-	highlight("Boolean",      theme.base09, nil, cterm09, nil, nil, nil)
-	highlight("Character",    theme.base08, nil, cterm08, nil, nil, nil)
-	highlight("Comment",      theme.base03, nil, cterm03, nil, nil, nil)
-	highlight("Conditional",  theme.base0E, nil, cterm0E, nil, nil, nil)
-	highlight("Constant",     theme.base09, nil, cterm09, nil, nil, nil)
-	highlight("Define",       theme.base0E, nil, cterm0E, nil, "none", nil)
-	highlight("Delimiter",    theme.base0F, nil, cterm0F, nil, nil, nil)
-	highlight("Float",        theme.base09, nil, cterm09, nil, nil, nil)
-	highlight("Function",     theme.base0D, nil, cterm0D, nil, nil, nil)
-	highlight("Identifier",   theme.base08, nil, cterm08, nil, "none", nil)
-	highlight("Include",      theme.base0D, nil, cterm0D, nil, nil, nil)
-	highlight("Keyword",      theme.base0E, nil, cterm0E, nil, nil, nil)
-	highlight("Label",        theme.base0A, nil, cterm0A, nil, nil, nil)
-	highlight("Number",       theme.base09, nil, cterm09, nil, nil, nil)
-	highlight("Operator",     theme.base05, nil, cterm05, nil, "none", nil)
-	highlight("PreProc",      theme.base0A, nil, cterm0A, nil, nil, nil)
-	highlight("Repeat",       theme.base0A, nil, cterm0A, nil, nil, nil)
-	highlight("Special",      theme.base0C, nil, cterm0C, nil, nil, nil)
-	highlight("SpecialChar",  theme.base0F, nil, cterm0F, nil, nil, nil)
-	highlight("Statement",    theme.base08, nil, cterm08, nil, nil, nil)
-	highlight("StorageClass", theme.base0A, nil, cterm0A, nil, nil, nil)
-	highlight("String",       theme.base0B, nil, cterm0B, nil, nil, nil)
-	highlight("Structure",    theme.base0E, nil, cterm0E, nil, nil, nil)
-	highlight("Tag",          theme.base0A, nil, cterm0A, nil, nil, nil)
-	highlight("Todo",         theme.base0A, theme.base01, cterm0A, cterm01, nil, nil)
-	highlight("Type",         theme.base0A, nil, cterm0A, nil, "none", nil)
-	highlight("Typedef",      theme.base0A, nil, cterm0A, nil, nil, nil)
+	hi("Boolean",      theme.base09, nil, cterm09, nil, nil, nil)
+	hi("Character",    theme.base08, nil, cterm08, nil, nil, nil)
+	hi("Comment",      theme.base03, nil, cterm03, nil, nil, nil)
+	hi("Conditional",  theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("Constant",     theme.base09, nil, cterm09, nil, nil, nil)
+	hi("Define",       theme.base0E, nil, cterm0E, nil, "none", nil)
+	hi("Delimiter",    theme.base0F, nil, cterm0F, nil, nil, nil)
+	hi("Float",        theme.base09, nil, cterm09, nil, nil, nil)
+	hi("Function",     theme.base0D, nil, cterm0D, nil, nil, nil)
+	hi("Identifier",   theme.base08, nil, cterm08, nil, "none", nil)
+	hi("Include",      theme.base0D, nil, cterm0D, nil, nil, nil)
+	hi("Keyword",      theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("Label",        theme.base0A, nil, cterm0A, nil, nil, nil)
+	hi("Number",       theme.base09, nil, cterm09, nil, nil, nil)
+	hi("Operator",     theme.base05, nil, cterm05, nil, "none", nil)
+	hi("PreProc",      theme.base0A, nil, cterm0A, nil, nil, nil)
+	hi("Repeat",       theme.base0A, nil, cterm0A, nil, nil, nil)
+	hi("Special",      theme.base0C, nil, cterm0C, nil, nil, nil)
+	hi("SpecialChar",  theme.base0F, nil, cterm0F, nil, nil, nil)
+	hi("Statement",    theme.base08, nil, cterm08, nil, nil, nil)
+	hi("StorageClass", theme.base0A, nil, cterm0A, nil, nil, nil)
+	hi("String",       theme.base0B, nil, cterm0B, nil, nil, nil)
+	hi("Structure",    theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("Tag",          theme.base0A, nil, cterm0A, nil, nil, nil)
+	hi("Todo",         theme.base0A, theme.base01, cterm0A, cterm01, nil, nil)
+	hi("Type",         theme.base0A, nil, cterm0A, nil, "none", nil)
+	hi("Typedef",      theme.base0A, nil, cterm0A, nil, nil, nil)
 
 	---
 	-- Extra definitions
 	---
 
 	-- C highlighting
-	highlight("cOperator",   theme.base0C, nil, cterm0C, nil, nil, nil)
-	highlight("cPreCondit",  theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("cOperator",   theme.base0C, nil, cterm0C, nil, nil, nil)
+	hi("cPreCondit",  theme.base0E, nil, cterm0E, nil, nil, nil)
 
 	-- C# highlighting
-	highlight("csClass",                 theme.base0A, nil, cterm0A, nil, nil, nil)
-	highlight("csAttribute",             theme.base0A, nil, cterm0A, nil, nil, nil)
-	highlight("csModifier",              theme.base0E, nil, cterm0E, nil, nil, nil)
-	highlight("csType",                  theme.base08, nil, cterm08, nil, nil, nil)
-	highlight("csUnspecifiedStatement",  theme.base0D, nil, cterm0D, nil, nil, nil)
-	highlight("csContextualStatement",   theme.base0E, nil, cterm0E, nil, nil, nil)
-	highlight("csNewDecleration",        theme.base08, nil, cterm08, nil, nil, nil)
+	hi("csClass",                 theme.base0A, nil, cterm0A, nil, nil, nil)
+	hi("csAttribute",             theme.base0A, nil, cterm0A, nil, nil, nil)
+	hi("csModifier",              theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("csType",                  theme.base08, nil, cterm08, nil, nil, nil)
+	hi("csUnspecifiedStatement",  theme.base0D, nil, cterm0D, nil, nil, nil)
+	hi("csContextualStatement",   theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("csNewDecleration",        theme.base08, nil, cterm08, nil, nil, nil)
 
 	-- CSS highlighting
-	highlight("cssBraces",      theme.base05, nil, cterm05, nil, nil, nil)
-	highlight("cssClassName",   theme.base0E, nil, cterm0E, nil, nil, nil)
-	highlight("cssColor",       theme.base0C, nil, cterm0C, nil, nil, nil)
+	hi("cssBraces",      theme.base05, nil, cterm05, nil, nil, nil)
+	hi("cssClassName",   theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("cssColor",       theme.base0C, nil, cterm0C, nil, nil, nil)
 
 	-- Diff highlighting
-	highlight("DiffAdd",      theme.base0B, theme.base01,  cterm0B, cterm01, nil, nil)
-	highlight("DiffChange",   theme.base03, theme.base01,  cterm03, cterm01, nil, nil)
-	highlight("DiffDelete",   theme.base08, theme.base01,  cterm08, cterm01, nil, nil)
-	highlight("DiffText",     theme.base0D, theme.base01,  cterm0D, cterm01, nil, nil)
-	highlight("DiffAdded",    theme.base0B, theme.base00,  cterm0B, cterm00, nil, nil)
-	highlight("DiffFile",     theme.base08, theme.base00,  cterm08, cterm00, nil, nil)
-	highlight("DiffNewFile",  theme.base0B, theme.base00,  cterm0B, cterm00, nil, nil)
-	highlight("DiffLine",     theme.base0D, theme.base00,  cterm0D, cterm00, nil, nil)
-	highlight("DiffRemoved",  theme.base08, theme.base00,  cterm08, cterm00, nil, nil)
+	hi("DiffAdd",      theme.base0B, theme.base01,  cterm0B, cterm01, nil, nil)
+	hi("DiffChange",   theme.base03, theme.base01,  cterm03, cterm01, nil, nil)
+	hi("DiffDelete",   theme.base08, theme.base01,  cterm08, cterm01, nil, nil)
+	hi("DiffText",     theme.base0D, theme.base01,  cterm0D, cterm01, nil, nil)
+	hi("DiffAdded",    theme.base0B, theme.base00,  cterm0B, cterm00, nil, nil)
+	hi("DiffFile",     theme.base08, theme.base00,  cterm08, cterm00, nil, nil)
+	hi("DiffNewFile",  theme.base0B, theme.base00,  cterm0B, cterm00, nil, nil)
+	hi("DiffLine",     theme.base0D, theme.base00,  cterm0D, cterm00, nil, nil)
+	hi("DiffRemoved",  theme.base08, theme.base00,  cterm08, cterm00, nil, nil)
 
 	-- Git highlighting
-	highlight("gitcommitOverflow",       theme.base08, nil, cterm08, nil, nil, nil)
-	highlight("gitcommitSummary",        theme.base0B, nil, cterm0B, nil, nil, nil)
-	highlight("gitcommitComment",        theme.base03, nil, cterm03, nil, nil, nil)
-	highlight("gitcommitUntracked",      theme.base03, nil, cterm03, nil, nil, nil)
-	highlight("gitcommitDiscarded",      theme.base03, nil, cterm03, nil, nil, nil)
-	highlight("gitcommitSelected",       theme.base03, nil, cterm03, nil, nil, nil)
-	highlight("gitcommitHeader",         theme.base0E, nil, cterm0E, nil, nil, nil)
-	highlight("gitcommitSelectedType",   theme.base0D, nil, cterm0D, nil, nil, nil)
-	highlight("gitcommitUnmergedType",   theme.base0D, nil, cterm0D, nil, nil, nil)
-	highlight("gitcommitDiscardedType",  theme.base0D, nil, cterm0D, nil, nil, nil)
-	highlight("gitcommitBranch",         theme.base09, nil, cterm09, nil, "bold", nil)
-	highlight("gitcommitUntrackedFile",  theme.base0A, nil, cterm0A, nil, nil, nil)
-	highlight("gitcommitUnmergedFile",   theme.base08, nil, cterm08, nil, "bold", nil)
-	highlight("gitcommitDiscardedFile",  theme.base08, nil, cterm08, nil, "bold", nil)
-	highlight("gitcommitSelectedFile",   theme.base0B, nil, cterm0B, nil, "bold", nil)
+	hi("gitcommitOverflow",       theme.base08, nil, cterm08, nil, nil, nil)
+	hi("gitcommitSummary",        theme.base0B, nil, cterm0B, nil, nil, nil)
+	hi("gitcommitComment",        theme.base03, nil, cterm03, nil, nil, nil)
+	hi("gitcommitUntracked",      theme.base03, nil, cterm03, nil, nil, nil)
+	hi("gitcommitDiscarded",      theme.base03, nil, cterm03, nil, nil, nil)
+	hi("gitcommitSelected",       theme.base03, nil, cterm03, nil, nil, nil)
+	hi("gitcommitHeader",         theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("gitcommitSelectedType",   theme.base0D, nil, cterm0D, nil, nil, nil)
+	hi("gitcommitUnmergedType",   theme.base0D, nil, cterm0D, nil, nil, nil)
+	hi("gitcommitDiscardedType",  theme.base0D, nil, cterm0D, nil, nil, nil)
+	hi("gitcommitBranch",         theme.base09, nil, cterm09, nil, "bold", nil)
+	hi("gitcommitUntrackedFile",  theme.base0A, nil, cterm0A, nil, nil, nil)
+	hi("gitcommitUnmergedFile",   theme.base08, nil, cterm08, nil, "bold", nil)
+	hi("gitcommitDiscardedFile",  theme.base08, nil, cterm08, nil, "bold", nil)
+	hi("gitcommitSelectedFile",   theme.base0B, nil, cterm0B, nil, "bold", nil)
 
 	-- GitGutter highlighting
-	highlight("GitGutterAdd",     theme.base0B, theme.base01, cterm0B, cterm01, nil, nil)
-	highlight("GitGutterChange",  theme.base0D, theme.base01, cterm0D, cterm01, nil, nil)
-	highlight("GitGutterDelete",  theme.base08, theme.base01, cterm08, cterm01, nil, nil)
-	highlight("GitGutterChangeDelete",  theme.base0E, theme.base01, cterm0E, cterm01, nil, nil)
+	hi("GitGutterAdd",     theme.base0B, theme.base01, cterm0B, cterm01, nil, nil)
+	hi("GitGutterChange",  theme.base0D, theme.base01, cterm0D, cterm01, nil, nil)
+	hi("GitGutterDelete",  theme.base08, theme.base01, cterm08, cterm01, nil, nil)
+	hi("GitGutterChangeDelete",  theme.base0E, theme.base01, cterm0E, cterm01, nil, nil)
 
 	-- HTML highlighting
-	highlight("htmlBold",    theme.base0A, nil, cterm0A, nil, nil, nil)
-	highlight("htmlItalic",  theme.base0E, nil, cterm0E, nil, nil, nil)
-	highlight("htmlEndTag",  theme.base05, nil, cterm05, nil, nil, nil)
-	highlight("htmlTag",     theme.base05, nil, cterm05, nil, nil, nil)
+	hi("htmlBold",    theme.base0A, nil, cterm0A, nil, nil, nil)
+	hi("htmlItalic",  theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("htmlEndTag",  theme.base05, nil, cterm05, nil, nil, nil)
+	hi("htmlTag",     theme.base05, nil, cterm05, nil, nil, nil)
 
 	-- JavaScript highlighting
-	highlight("javaScript",        theme.base05, nil, cterm05, nil, nil, nil)
-	highlight("javaScriptBraces",  theme.base05, nil, cterm05, nil, nil, nil)
-	highlight("javaScriptNumber",  theme.base09, nil, cterm09, nil, nil, nil)
+	hi("javaScript",        theme.base05, nil, cterm05, nil, nil, nil)
+	hi("javaScriptBraces",  theme.base05, nil, cterm05, nil, nil, nil)
+	hi("javaScriptNumber",  theme.base09, nil, cterm09, nil, nil, nil)
 	-- pangloss/vim-javascript highlighting
-	highlight("jsOperator",          theme.base0D, nil, cterm0D, nil, nil, nil)
-	highlight("jsStatement",         theme.base0E, nil, cterm0E, nil, nil, nil)
-	highlight("jsReturn",            theme.base0E, nil, cterm0E, nil, nil, nil)
-	highlight("jsThis",              theme.base08, nil, cterm08, nil, nil, nil)
-	highlight("jsClassDefinition",   theme.base0A, nil, cterm0A, nil, nil, nil)
-	highlight("jsFunction",          theme.base0E, nil, cterm0E, nil, nil, nil)
-	highlight("jsFuncName",          theme.base0D, nil, cterm0D, nil, nil, nil)
-	highlight("jsFuncCall",          theme.base0D, nil, cterm0D, nil, nil, nil)
-	highlight("jsClassFuncName",     theme.base0D, nil, cterm0D, nil, nil, nil)
-	highlight("jsClassMethodType",   theme.base0E, nil, cterm0E, nil, nil, nil)
-	highlight("jsRegexpString",      theme.base0C, nil, cterm0C, nil, nil, nil)
-	highlight("jsGlobalObjects",     theme.base0A, nil, cterm0A, nil, nil, nil)
-	highlight("jsGlobalNodeObjects", theme.base0A, nil, cterm0A, nil, nil, nil)
-	highlight("jsExceptions",        theme.base0A, nil, cterm0A, nil, nil, nil)
-	highlight("jsBuiltins",          theme.base0A, nil, cterm0A, nil, nil, nil)
+	hi("jsOperator",          theme.base0D, nil, cterm0D, nil, nil, nil)
+	hi("jsStatement",         theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("jsReturn",            theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("jsThis",              theme.base08, nil, cterm08, nil, nil, nil)
+	hi("jsClassDefinition",   theme.base0A, nil, cterm0A, nil, nil, nil)
+	hi("jsFunction",          theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("jsFuncName",          theme.base0D, nil, cterm0D, nil, nil, nil)
+	hi("jsFuncCall",          theme.base0D, nil, cterm0D, nil, nil, nil)
+	hi("jsClassFuncName",     theme.base0D, nil, cterm0D, nil, nil, nil)
+	hi("jsClassMethodType",   theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("jsRegexpString",      theme.base0C, nil, cterm0C, nil, nil, nil)
+	hi("jsGlobalObjects",     theme.base0A, nil, cterm0A, nil, nil, nil)
+	hi("jsGlobalNodeObjects", theme.base0A, nil, cterm0A, nil, nil, nil)
+	hi("jsExceptions",        theme.base0A, nil, cterm0A, nil, nil, nil)
+	hi("jsBuiltins",          theme.base0A, nil, cterm0A, nil, nil, nil)
 
 	-- Mail highlighting
-	highlight("mailQuoted1",  theme.base0A, nil, cterm0A, nil, nil, nil)
-	highlight("mailQuoted2",  theme.base0B, nil, cterm0B, nil, nil, nil)
-	highlight("mailQuoted3",  theme.base0E, nil, cterm0E, nil, nil, nil)
-	highlight("mailQuoted4",  theme.base0C, nil, cterm0C, nil, nil, nil)
-	highlight("mailQuoted5",  theme.base0D, nil, cterm0D, nil, nil, nil)
-	highlight("mailQuoted6",  theme.base0A, nil, cterm0A, nil, nil, nil)
-	highlight("mailURL",      theme.base0D, nil, cterm0D, nil, nil, nil)
-	highlight("mailEmail",    theme.base0D, nil, cterm0D, nil, nil, nil)
+	hi("mailQuoted1",  theme.base0A, nil, cterm0A, nil, nil, nil)
+	hi("mailQuoted2",  theme.base0B, nil, cterm0B, nil, nil, nil)
+	hi("mailQuoted3",  theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("mailQuoted4",  theme.base0C, nil, cterm0C, nil, nil, nil)
+	hi("mailQuoted5",  theme.base0D, nil, cterm0D, nil, nil, nil)
+	hi("mailQuoted6",  theme.base0A, nil, cterm0A, nil, nil, nil)
+	hi("mailURL",      theme.base0D, nil, cterm0D, nil, nil, nil)
+	hi("mailEmail",    theme.base0D, nil, cterm0D, nil, nil, nil)
 
 	-- Markdown highlighting
-	highlight("markdownCode",              theme.base0B, nil, cterm0B, nil, nil, nil)
-	highlight("markdownError",             theme.base05, theme.base00, cterm05, cterm00, nil, nil)
-	highlight("markdownCodeBlock",         theme.base0B, nil, cterm0B, nil, nil, nil)
-	highlight("markdownHeadingDelimiter",  theme.base0D, nil, cterm0D, nil, nil, nil)
+	hi("markdownCode",              theme.base0B, nil, cterm0B, nil, nil, nil)
+	hi("markdownError",             theme.base05, theme.base00, cterm05, cterm00, nil, nil)
+	hi("markdownCodeBlock",         theme.base0B, nil, cterm0B, nil, nil, nil)
+	hi("markdownHeadingDelimiter",  theme.base0D, nil, cterm0D, nil, nil, nil)
 
 	-- NERDTree highlighting
-	highlight("NERDTreeDirSlash",  theme.base0D, nil, cterm0D, nil, nil, nil)
-	highlight("NERDTreeExecFile",  theme.base05, nil, cterm05, nil, nil, nil)
+	hi("NERDTreeDirSlash",  theme.base0D, nil, cterm0D, nil, nil, nil)
+	hi("NERDTreeExecFile",  theme.base05, nil, cterm05, nil, nil, nil)
 
 	-- PHP highlighting
-	highlight("phpMemberSelector",  theme.base05, nil, cterm05, nil, nil, nil)
-	highlight("phpComparison",      theme.base05, nil, cterm05, nil, nil, nil)
-	highlight("phpParent",          theme.base05, nil, cterm05, nil, nil, nil)
-	highlight("phpMethodsVar",      theme.base0C, nil, cterm0C, nil, nil, nil)
+	hi("phpMemberSelector",  theme.base05, nil, cterm05, nil, nil, nil)
+	hi("phpComparison",      theme.base05, nil, cterm05, nil, nil, nil)
+	hi("phpParent",          theme.base05, nil, cterm05, nil, nil, nil)
+	hi("phpMethodsVar",      theme.base0C, nil, cterm0C, nil, nil, nil)
 
 	-- Python highlighting
-	highlight("pythonOperator",  theme.base0E, nil, cterm0E, nil, nil, nil)
-	highlight("pythonRepeat",    theme.base0E, nil, cterm0E, nil, nil, nil)
-	highlight("pythonInclude",   theme.base0E, nil, cterm0E, nil, nil, nil)
-	highlight("pythonStatement", theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("pythonOperator",  theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("pythonRepeat",    theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("pythonInclude",   theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("pythonStatement", theme.base0E, nil, cterm0E, nil, nil, nil)
 
 	-- Ruby highlighting
-	highlight("rubyAttribute",               theme.base0D, nil, cterm0D, nil, nil, nil)
-	highlight("rubyConstant",                theme.base0A, nil, cterm0A, nil, nil, nil)
-	highlight("rubyInterpolationDelimiter",  theme.base0F, nil, cterm0F, nil, nil, nil)
-	highlight("rubyRegexp",                  theme.base0C, nil, cterm0C, nil, nil, nil)
-	highlight("rubySymbol",                  theme.base0B, nil, cterm0B, nil, nil, nil)
-	highlight("rubyStringDelimiter",         theme.base0B, nil, cterm0B, nil, nil, nil)
+	hi("rubyAttribute",               theme.base0D, nil, cterm0D, nil, nil, nil)
+	hi("rubyConstant",                theme.base0A, nil, cterm0A, nil, nil, nil)
+	hi("rubyInterpolationDelimiter",  theme.base0F, nil, cterm0F, nil, nil, nil)
+	hi("rubyRegexp",                  theme.base0C, nil, cterm0C, nil, nil, nil)
+	hi("rubySymbol",                  theme.base0B, nil, cterm0B, nil, nil, nil)
+	hi("rubyStringDelimiter",         theme.base0B, nil, cterm0B, nil, nil, nil)
 
 	-- SASS highlighting
-	highlight("sassidChar",     theme.base08, nil, cterm08, nil, nil, nil)
-	highlight("sassClassChar",  theme.base09, nil, cterm09, nil, nil, nil)
-	highlight("sassInclude",    theme.base0E, nil, cterm0E, nil, nil, nil)
-	highlight("sassMixing",     theme.base0E, nil, cterm0E, nil, nil, nil)
-	highlight("sassMixinName",  theme.base0D, nil, cterm0D, nil, nil, nil)
+	hi("sassidChar",     theme.base08, nil, cterm08, nil, nil, nil)
+	hi("sassClassChar",  theme.base09, nil, cterm09, nil, nil, nil)
+	hi("sassInclude",    theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("sassMixing",     theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("sassMixinName",  theme.base0D, nil, cterm0D, nil, nil, nil)
 
 	-- Signify highlighting
-	highlight("SignifySignAdd",     theme.base0B, theme.base01, cterm0B, cterm01, nil, nil)
-	highlight("SignifySignChange",  theme.base0D, theme.base01, cterm0D, cterm01, nil, nil)
-	highlight("SignifySignDelete",  theme.base08, theme.base01, cterm08, cterm01, nil, nil)
+	hi("SignifySignAdd",     theme.base0B, theme.base01, cterm0B, cterm01, nil, nil)
+	hi("SignifySignChange",  theme.base0D, theme.base01, cterm0D, cterm01, nil, nil)
+	hi("SignifySignDelete",  theme.base08, theme.base01, cterm08, cterm01, nil, nil)
 
 	-- Spelling highlighting
-	highlight("SpellBad",     nil, nil, nil, nil, "undercurl", theme.base08)
-	highlight("SpellLocal",   nil, nil, nil, nil, "undercurl", theme.base0C)
-	highlight("SpellCap",     nil, nil, nil, nil, "undercurl", theme.base0D)
-	highlight("SpellRare",    nil, nil, nil, nil, "undercurl", theme.base0E)
+	hi("SpellBad",     nil, nil, nil, nil, "undercurl", theme.base08)
+	hi("SpellLocal",   nil, nil, nil, nil, "undercurl", theme.base0C)
+	hi("SpellCap",     nil, nil, nil, nil, "undercurl", theme.base0D)
+	hi("SpellRare",    nil, nil, nil, nil, "undercurl", theme.base0E)
 
 	-- Startify highlighting
-	highlight("StartifyBracket",  theme.base03, nil, cterm03, nil, nil, nil)
-	highlight("StartifyFile",     theme.base07, nil, cterm07, nil, nil, nil)
-	highlight("StartifyFooter",   theme.base03, nil, cterm03, nil, nil, nil)
-	highlight("StartifyHeader",   theme.base0B, nil, cterm0B, nil, nil, nil)
-	highlight("StartifyNumber",   theme.base09, nil, cterm09, nil, nil, nil)
-	highlight("StartifyPath",     theme.base03, nil, cterm03, nil, nil, nil)
-	highlight("StartifySection",  theme.base0E, nil, cterm0E, nil, nil, nil)
-	highlight("StartifySelect",   theme.base0C, nil, cterm0C, nil, nil, nil)
-	highlight("StartifySlash",    theme.base03, nil, cterm03, nil, nil, nil)
-	highlight("StartifySpecial",  theme.base03, nil, cterm03, nil, nil, nil)
+	hi("StartifyBracket",  theme.base03, nil, cterm03, nil, nil, nil)
+	hi("StartifyFile",     theme.base07, nil, cterm07, nil, nil, nil)
+	hi("StartifyFooter",   theme.base03, nil, cterm03, nil, nil, nil)
+	hi("StartifyHeader",   theme.base0B, nil, cterm0B, nil, nil, nil)
+	hi("StartifyNumber",   theme.base09, nil, cterm09, nil, nil, nil)
+	hi("StartifyPath",     theme.base03, nil, cterm03, nil, nil, nil)
+	hi("StartifySection",  theme.base0E, nil, cterm0E, nil, nil, nil)
+	hi("StartifySelect",   theme.base0C, nil, cterm0C, nil, nil, nil)
+	hi("StartifySlash",    theme.base03, nil, cterm03, nil, nil, nil)
+	hi("StartifySpecial",  theme.base03, nil, cterm03, nil, nil, nil)
 
 	-- Java highlighting
-	highlight("javaOperator",     theme.base0D, nil, cterm0D, nil, nil, nil)
-
-	-- TODO
-	-- nvim.command 'syntax on'
+	hi("javaOperator",     theme.base0D, nil, cterm0D, nil, nil, nil)
 end
 
 local themes = {}
