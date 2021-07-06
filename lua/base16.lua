@@ -78,6 +78,40 @@ local function apply_base16_theme(theme, use_256_colorspace)
 		g.terminal_color_foreground = "#"..theme.base0E
 	end
 
+	g.base16_gui00 = theme.base00
+	g.base16_gui01 = theme.base01
+	g.base16_gui02 = theme.base02
+	g.base16_gui03 = theme.base03
+	g.base16_gui04 = theme.base04
+	g.base16_gui05 = theme.base05
+	g.base16_gui06 = theme.base06
+	g.base16_gui07 = theme.base07
+	g.base16_gui08 = theme.base08
+	g.base16_gui09 = theme.base09
+	g.base16_gui0A = theme.base0A
+	g.base16_gui0B = theme.base0B
+	g.base16_gui0C = theme.base0C
+	g.base16_gui0D = theme.base0D
+	g.base16_gui0E = theme.base0E
+	g.base16_gui0F = theme.base0F
+
+	g.base16_cterm00 = cterm00
+	g.base16_cterm01 = cterm01
+	g.base16_cterm02 = cterm02
+	g.base16_cterm03 = cterm03
+	g.base16_cterm04 = cterm04
+	g.base16_cterm05 = cterm05
+	g.base16_cterm06 = cterm06
+	g.base16_cterm07 = cterm07
+	g.base16_cterm08 = cterm08
+	g.base16_cterm09 = cterm09
+	g.base16_cterm0A = cterm0A
+	g.base16_cterm0B = cterm0B
+	g.base16_cterm0C = cterm0C
+	g.base16_cterm0D = cterm0D
+	g.base16_cterm0E = cterm0E
+	g.base16_cterm0F = cterm0F
+
 	-- Vim editor colors
 	hi("Normal",        theme.base05, theme.base00, cterm05, cterm00, nil, nil)
 	hi("Bold",          nil, nil, nil, nil, "bold", nil)
